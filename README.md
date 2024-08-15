@@ -13,7 +13,10 @@ It's an Image Viewer that is REAL annyoing to use, still it's fun.
 
 - **Future Enhancements**: I plan to improve the Tic-Tac-Toe bot by implementing more advanced algorithms to solve the game. The goal is to enhance its speed and optimize memory usage.
 
-- **Testing Environment**: This project has been tested on an Ubuntu WSL2 environment with the VcXsrv server. While it runs smoothly in this setup, compatibility with other systems has not been thoroughly tested, so performance may vary, so I would love to know your experience running it.
+- **Testing Environment**: This project has been tested on an Ubuntu WSL2 environment with the VcXsrv server. While it runs smoothly in this setup, compatibility with other systems has not been thoroughly tested, so performance may vary. I would appreciate any feedback on your experience running it on different systems.
+
+- **File Format Limitation**: Currently, the project is limited to processing `.png` file extensions. Support for additional file formats may be considered in future updates.
+
 
 
 ## Prerequisites
@@ -22,6 +25,7 @@ Before you begin, ensure you have the following installed on your machine:
 
 - **Raylib**: A simple and easy-to-use library to enjoy videogames programming.
   - You can download and install Raylib from the [official website](https://www.raylib.com/) or through your package manager:
+
     ```bash
     # On Ubuntu/Debian
     sudo apt-get install libraylib-dev
@@ -32,10 +36,12 @@ Before you begin, ensure you have the following installed on your machine:
 
 - **C++ Compiler**: A compiler that supports C++11 or later (e.g., GCC, Clang, MSVC).
   - On Ubuntu/Debian, you can install GCC with:
+
     ```bash
     sudo apt-get install build-essential
     ```
   - On macOS, you can install Xcode Command Line Tools:
+
     ```bash
     xcode-select --install
     ```
