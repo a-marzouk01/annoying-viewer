@@ -1,8 +1,11 @@
 #include "raylib.h"
+#include <fstream>
+#include <iostream>
 #include <stdlib.h> 
 #include <cassert>
 #include <cstring>
 #include <time.h>   
+#include <unistd.h>
 
 #define GRID_SIZE 3
 #define SCREEN_WIDTH 600
@@ -14,6 +17,82 @@ enum Cell{
     PLAYER,
     BOT
 };
+
+bool registration() {
+    std::string username, password, password1;
+    std::cout << "Enter username: ";
+    std::cin >> username;
+    std::cout << "Enter password: ";
+    std::cin >> password;
+    std::cout << "Enter your password again: ";
+    std::cin >> password1;
+
+    if(password == password1) {
+        std::ofstream file;
+        file.open("users.txt", std::ios::app);
+
+        file << username << " " << password << std::endl;
+
+        file.close();
+
+        std::cout << "Registration successful!" << std::endl;
+        sleep(1);
+        return true;
+    }
+    std::cout << "Passwords are not equal!" << std::endl;
+    std::cout << "please try again!" << std::endl;
+    sleep(1);
+    return false;
+}
+
+bool login() {
+    std::string username, password, u, p;
+    std::cout << "Enter username: ";
+    std::cin >> username;
+    std::cout << "Enter password: ";
+    std::cin >> password;
+
+    std::ifstream file("users.txt");
+    while (file >> u >> p) {
+        if (u == username && p == password) {
+            std::cout << "Login successful!" << std::endl;
+            std::cout << "lets start your image...";
+            sleep(1);
+            return true;
+        }
+    }
+    file.close();
+
+    std::cout << "Invalid username or password!" << std::endl;
+    sleep(1);
+    return false;
+}
+
+bool password() {
+    int choice;
+    bool res = false;
+    std::cout << "1. Register\n2. Login\nEnter your choice: ";
+    std::cin >> choice;
+
+    while(!res) {
+        if (choice == 1) {
+            res = registration();
+        } else if (choice == 2) {
+            res = login();
+            if(!res) {
+                char ans;
+                std::cout << "Would you like to try again(y/n): ";
+                std::cin >> ans; 
+                if(ans == 'y') res = false;
+                else if(ans == 'n') res = true;
+                else std::cout << "Invalid answer";
+            }
+        } else {
+            std::cout << "Invalid choice!" << std::endl;
+        }
+    }
+    return true;
+}
 
 void render_image(char *file_path) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "annoying-viewer");
@@ -44,8 +123,6 @@ void drawGrid(Cell grid[GRID_SIZE][GRID_SIZE]) {
             DrawRectangleLines(x, y, CELL_SIZE, CELL_SIZE, BLACK);
 
             if (grid[i][j] == PLAYER) {
-                // DrawLine(x + 20, y + 20, x + CELL_SIZE - 20, y + CELL_SIZE - 20, RED);
-                // DrawLine(x + CELL_SIZE - 20, y + 20, x + 20, y + CELL_SIZE - 20, RED);
                 DrawLineEx((Vector2){ static_cast<float>(x + 20), static_cast<float>(y + 20) }, (Vector2){ static_cast<float>(x + CELL_SIZE - 20), static_cast<float>(y + CELL_SIZE - 20) }, 10, RED);
                 DrawLineEx((Vector2){ static_cast<float>(x + CELL_SIZE - 20), static_cast<float>(y + 20) }, (Vector2){ static_cast<float>(x + 20), static_cast<float>(y + CELL_SIZE - 20) }, 10, RED);
             } else if (grid[i][j] == BOT) {
@@ -110,8 +187,6 @@ Cell checkWinner(Cell grid[GRID_SIZE][GRID_SIZE]) {
 
 Cell ttt() {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "annoying-viewer");
-
-    Color BACKGROUND_COLOR= { 30, 30, 46, 255 };
 
     SetTargetFPS(60);
 
@@ -218,17 +293,27 @@ int main(int argc, char *argv[])
 {
     srand(time(NULL));
 
-    bool play = true;
-    
-    while(play) {
-        Cell winner = ttt();
-        if(winner == PLAYER || winner == NONE) {
-            assert(argc == 2 && "file not provided");
-            char *file_path = argv[1];
-            play = false;
-            render_image(file_path);
-        }else {
-            play = play_again();
+    if(argc == 1) {
+        std::cout << "USAGE: ./main <file>\n";
+        std::cout << "<file>: is the path to your png picture\n";
+        std::cout << "ERROR: file was not provided\n";
+        return 1;
+    }
+
+    bool logged = password();
+    if(logged) {
+        bool play = true;
+
+        while(play) {
+            Cell winner = ttt();
+            if(winner == PLAYER) {
+                assert(argc == 2 && "file not provided");
+                char *file_path = argv[1];
+                play = false;
+                render_image(file_path);
+            }else if(winner == BOT || winner == NONE){
+                play = play_again();
+            }
         }
     }
 
